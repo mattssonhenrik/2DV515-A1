@@ -1,5 +1,6 @@
 package hm222yj_2dv515.a1.backend.model.datareader;
 
+// Simple DTO class, no real "bussiness logic", just support for dataController getData().
 public class DataReader {
     int userId;
     String userName;
@@ -33,5 +34,16 @@ public class DataReader {
 
     public double getRating() {
         return rating;
+    }
+
+    @Override
+    public String toString() {
+        return "DataReader{" +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", movieId=" + movieId +
+                ", movieTitle='" + movieTitle + '\'' +
+                ", rating=" + rating +
+                '}';
     }
 }

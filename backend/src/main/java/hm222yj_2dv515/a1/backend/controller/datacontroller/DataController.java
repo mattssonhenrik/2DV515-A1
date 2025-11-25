@@ -3,13 +3,17 @@ package hm222yj_2dv515.a1.backend.controller.datacontroller;
 // https://www.geeksforgeeks.org/postgresql/postgresql-jdbc-driver/
 // https://www.postgresql.org/docs/current/sql-copy.html
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.io.Reader;
 
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
+import hm222yj_2dv515.a1.backend.model.datareader.DataReader;
 
 public class DataController {
     String smallOrLarge;
@@ -23,18 +27,41 @@ public class DataController {
         System.out.println("This is the root directory of the project: " + projectDirectory);
     }
 
-    // private Statement connectAndGetStatement() {
-    // try {
-    // Connection jdbcconnection = DriverManager.getConnection(url, user, password);
-    // Statement statement = jdbcconnection.createStatement();
-    // return statement;
-    // } catch (Exception error) {
-    // System.out.println("Soemthing went wrong in connectAndGetStatement!");
-    // error.printStackTrace();
-    // }
-    // return null;
-    // }
+    public ArrayList<DataReader> getData() {
+        ArrayList<DataReader> dataBaseResponse = new ArrayList<DataReader>();
+        String getDataSqlQuery = "SELECT " +
+                "  users.user_id    AS user_id, " +
+                "  users.name       AS user_name, " +
+                "  movies.movie_id  AS movie_id, " +
+                "  movies.title     AS movie_title, " +
+                "  ratings.rating   AS rating " +
+                "FROM ratings " +
+                "JOIN users  ON ratings.user_id  = users.user_id " +
+                "JOIN movies ON ratings.movie_id = movies.movie_id;";
 
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getDataSqlQuery)) {
+
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("user_id");
+                String userName = resultSet.getString("user_name");
+                int movieId = resultSet.getInt("movie_id");
+                String movieTitle = resultSet.getString("movie_title");
+                double rating = resultSet.getDouble("rating");
+
+                DataReader readLineToInsert = new DataReader(userId, userName, movieId, movieTitle, rating);
+                dataBaseResponse.add(readLineToInsert);
+            }
+
+        } catch (SQLException error) {
+            System.out.println("Something went wrong in getData method!");
+            error.printStackTrace();
+        }
+        return dataBaseResponse;
+    }
+
+    //// CSV LOADING AND DELETING ////
     private String getPath(String type) {
         return projectDirectory + "/data/" + smallOrLarge + "-" + type + "/" + type + ".csv";
     }
@@ -72,8 +99,14 @@ public class DataController {
 
     }
 
-    // public void deleteData() {
-    // Statement statement = connectAndGetStatement();
-    // String sqlQuery = "";
-    // }
+    public void deleteData() {
+        String deleteQuery = "TRUNCATE ratings, movies, users CASCADE;";
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(deleteQuery);
+        } catch (Exception error) {
+            System.out.println("Something went wrong in deleteData method!");
+            error.printStackTrace();
+        }
+    }
 }

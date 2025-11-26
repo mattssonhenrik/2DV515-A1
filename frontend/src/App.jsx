@@ -7,7 +7,6 @@ function App() {
 
   return (
     <>
-      <h1>Lets go</h1>
       <MainPage />
     </>
   )

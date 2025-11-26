@@ -6,9 +6,9 @@ public class DataReader {
     String userName;
     int movieId;
     String movieTitle;
-    double rating;
+    Double rating;
 
-    public DataReader(int userId, String userName, int movieId, String movieTitle, double rating) {
+    public DataReader(int userId, String userName, int movieId, String movieTitle, Double rating) {
         this.userId = userId;
         this.userName = userName;
         this.movieId = movieId;
@@ -32,7 +32,7 @@ public class DataReader {
         return movieTitle;
     }
 
-    public double getRating() {
+    public Double getRating() {
         return rating;
     }
 

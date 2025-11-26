@@ -31,7 +31,7 @@ public class UserAndMovieService {
             String userName = row.getUserName();
             int movieId = row.getMovieId();
             String movieTitle = row.getMovieTitle();
-            double rating = row.getRating();
+            Double rating = row.getRating();
 
             UserModel user = users.get(userId);
             if (user == null) {

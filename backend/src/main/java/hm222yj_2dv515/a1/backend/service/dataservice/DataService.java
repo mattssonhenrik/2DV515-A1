@@ -25,8 +25,8 @@ public class DataService {
     String password = "root";
     String projectDirectory = System.getProperty("user.dir");
 
-    public DataService(String fileType) {
-        this.smallOrLarge = fileType;
+    public DataService() {
+        this.smallOrLarge = "large";
         System.out.println("This is the root directory of the project: " + projectDirectory);
     }
 
@@ -51,7 +51,7 @@ public class DataService {
                 String userName = resultSet.getString("user_name");
                 int movieId = resultSet.getInt("movie_id");
                 String movieTitle = resultSet.getString("movie_title");
-                double rating = resultSet.getDouble("rating");
+                Double rating = resultSet.getDouble("rating");
 
                 DataReader readLineToInsert = new DataReader(userId, userName, movieId, movieTitle, rating);
                 dataBaseResponse.add(readLineToInsert);

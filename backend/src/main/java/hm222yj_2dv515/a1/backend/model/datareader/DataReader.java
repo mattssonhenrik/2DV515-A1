@@ -1,6 +1,6 @@
 package hm222yj_2dv515.a1.backend.model.datareader;
 
-// Simple DTO class, no real "bussiness logic", just support for dataController getData().
+// Simple DTO class, no real "bussiness logic", just support for dataService getData().
 public class DataReader {
     int userId;
     String userName;

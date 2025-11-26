@@ -7,6 +7,7 @@ import hm222yj_2dv515.a1.backend.model.moviemodel.MovieModel;
 public class UserAndMovieSet {
     Map<Integer, UserModel> users;
     Map<Integer, MovieModel> movies;
+    // Vår wrapper för att para ihop användare och filmer.
 
     public UserAndMovieSet(Map<Integer, UserModel> users, Map<Integer, MovieModel> movies) {
         this.users = users;

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import hm222yj_2dv515.a1.backend.controller.datacontroller.DataController;
 import hm222yj_2dv515.a1.backend.model.datareader.DataReader;
 import hm222yj_2dv515.a1.backend.model.moviemodel.MovieModel;
 import hm222yj_2dv515.a1.backend.model.userandmovieset.UserAndMovieSet;
 import hm222yj_2dv515.a1.backend.model.usermodel.UserModel;
 
+@Service
 public class UserAndMovieController {
     DataController dataController;
 

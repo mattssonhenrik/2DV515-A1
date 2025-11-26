@@ -7,6 +7,7 @@ public class UserModel {
     int id;
     String name;
     Map<Integer, Double> ratings = new HashMap<>();
+    // Behövs för att beräkna euclidean distans. 
 
     public UserModel (int id, String name) {
         this.id = id;

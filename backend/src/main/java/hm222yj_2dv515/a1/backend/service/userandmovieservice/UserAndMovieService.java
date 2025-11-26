@@ -1,24 +1,27 @@
-package hm222yj_2dv515.a1.backend.controller.euclidean;
+package hm222yj_2dv515.a1.backend.service.userandmovieservice;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import hm222yj_2dv515.a1.backend.controller.datacontroller.DataController;
+import org.springframework.stereotype.Service;
+
+import hm222yj_2dv515.a1.backend.service.dataservice.DataService;
 import hm222yj_2dv515.a1.backend.model.datareader.DataReader;
 import hm222yj_2dv515.a1.backend.model.moviemodel.MovieModel;
 import hm222yj_2dv515.a1.backend.model.userandmovieset.UserAndMovieSet;
 import hm222yj_2dv515.a1.backend.model.usermodel.UserModel;
 
-public class Euclidean {
-    DataController dataController;
+@Service
+public class UserAndMovieService {
+    DataService dataService;
 
-    public Euclidean(DataController dataController) {
-        this.dataController = dataController;
+    public UserAndMovieService(DataService dataService) {
+        this.dataService = dataService;
     }
 
     public UserAndMovieSet buildData() {
-        ArrayList<DataReader> rows = dataController.getData();
+        ArrayList<DataReader> rows = dataService.getData();
 
         Map<Integer, UserModel> users = new HashMap<>();
         Map<Integer, MovieModel> movies = new HashMap<>();

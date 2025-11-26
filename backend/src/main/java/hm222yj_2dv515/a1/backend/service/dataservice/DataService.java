@@ -1,4 +1,4 @@
-package hm222yj_2dv515.a1.backend.controller.datacontroller;
+package hm222yj_2dv515.a1.backend.service.dataservice;
 
 // https://www.geeksforgeeks.org/postgresql/postgresql-jdbc-driver/
 // https://www.postgresql.org/docs/current/sql-copy.html
@@ -18,14 +18,14 @@ import org.springframework.stereotype.Service;
 import hm222yj_2dv515.a1.backend.model.datareader.DataReader;
 
 @Service
-public class DataController {
+public class DataService {
     String smallOrLarge;
     String url = "jdbc:postgresql://localhost:5432/2DV515_A1";
     String user = "postgres";
     String password = "root";
     String projectDirectory = System.getProperty("user.dir");
 
-    public DataController(String fileType) {
+    public DataService(String fileType) {
         this.smallOrLarge = fileType;
         System.out.println("This is the root directory of the project: " + projectDirectory);
     }

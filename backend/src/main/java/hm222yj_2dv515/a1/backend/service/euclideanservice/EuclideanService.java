@@ -35,7 +35,7 @@ public class EuclideanService {
                 continue;
             }
             UserModel otherUser = userEntry.getValue();
-            Double similarityComparison = euclideanSimilarity(targetUser, otherUser);
+            Double similarityComparison = euclideanSimilarity(targetUser, otherUser); // invoke / call Eulicdeansimilarity
 
             if (similarityComparison > 0.0) {
                 similarities.put(otherUserId, similarityComparison);
@@ -75,7 +75,7 @@ public class EuclideanService {
 
         UserModel targetUser = users.get(targetUserId);
 
-        Map<Integer, Double> similarities = similarityScoreToAllUsers(targetUserId, users);
+        Map<Integer, Double> similarities = similarityScoreToAllUsers(targetUserId, users); // Invoke / call SimilarityScoretoallusers
         Map<Integer, Double> targetRatings = targetUser.getRatings();
 
         Map<Integer, Double> weightedSum = new HashMap<>();
@@ -132,7 +132,8 @@ public class EuclideanService {
     public List<RecommendedMovie> topRecommendations(int targetUserId, int number) {
         UserAndMovieSet data = userAndMovieService.buildData();
         Map<Integer, MovieModel> movies = data.getMovies();
-        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId);
+        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId); // invoke // call
+                                                                                // computeweightedmoviescore method
 
         // Här gör vi om till en lsita för att kunna sortera smidigt med .sort().
         List<Map.Entry<Integer, Double>> sortedList = new ArrayList<>(scores.entrySet());

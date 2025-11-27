@@ -17,7 +17,7 @@ import java.util.List;
                                                 // port
 public class EuclideanController {
 
-    private final EuclideanService euclideanService;
+    EuclideanService euclideanService;
 
     public EuclideanController(EuclideanService euclideanService) {
         this.euclideanService = euclideanService;
@@ -26,8 +26,9 @@ public class EuclideanController {
     @GetMapping("/recommendations")
     public List<RecommendedMovie> getRecommendations(
             @RequestParam("userId") int userId,
-            @RequestParam(value = "results", defaultValue = "3") int results) {
+            @RequestParam(value = "results", defaultValue = "3") int results,
+            @RequestParam("isEuclidean") boolean isEuclidean) {
 
-        return euclideanService.topRecommendations(userId, results);
+        return euclideanService.topRecommendations(userId, results, isEuclidean);
     }
 }

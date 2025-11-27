@@ -22,12 +22,83 @@ public class EuclideanService {
         this.userAndMovieService = userAndMovieService;
     }
 
-    // COMPARE TO OTHER USERS
-    public Map<Integer, Double> similarityScoreToAllUsers(int targetUserId, Map<Integer, UserModel> users) {
+    public List<RecommendedMovie> topRecommendations(int targetUserId, int number, boolean isEuclidean) {
+        UserAndMovieSet data = userAndMovieService.buildData();
+        Map<Integer, MovieModel> movies = data.getMovies();
+        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId, isEuclidean); // Computeweightedmoviescore
+        // Här gör vi om till en lsita för att kunna sortera smidigt med .sort().
+        List<Map.Entry<Integer, Double>> sortedList = new ArrayList<>(scores.entrySet());
+        sortedList.sort((entry1, entry2) -> Double.compare(entry2.getValue(), entry1.getValue()));
+
+        List<RecommendedMovie> result = new ArrayList<>(); // Loopar genom en sortedlist och plockar ut topvalen
+        for (int i = 0; i < sortedList.size() && i < number; i++) {
+            Map.Entry<Integer, Double> entry = sortedList.get(i);
+            int movieId = entry.getKey();
+            double score = entry.getValue();
+
+            MovieModel movie = movies.get(movieId);
+            String title = (movie != null) ? movie.getTitle() : "Unknown Title";
+
+            result.add(new RecommendedMovie(movieId, title, score));
+        }
+        return result;
+    }
+
+    public Map<Integer, Double> computeWeightedMovieScores(int targetUserId, boolean isEuclidean) {
+        UserAndMovieSet data = userAndMovieService.buildData();
+        Map<Integer, UserModel> users = data.getUsers();
         UserModel targetUser = users.get(targetUserId);
+        Map<Integer, Double> similarities = similarityScoreToAllUsers(targetUserId, users, isEuclidean); // SimilarityScoretoallusers
+        Map<Integer, Double> targetRatings = targetUser.getRatings();
+        Map<Integer, Double> weightedSum = new HashMap<>();
+        Map<Integer, Double> similaritySum = new HashMap<>();
 
+        for (Map.Entry<Integer, Double> simEntry : similarities.entrySet()) {
+            int otherUserId = simEntry.getKey();
+            Double similarity = simEntry.getValue();
+            UserModel otherUser = users.get(otherUserId);
+            for (Map.Entry<Integer, Double> ratingEntry : otherUser.getRatings().entrySet()) {
+                int movieId = ratingEntry.getKey();
+                Double rating = ratingEntry.getValue();
+                if (targetRatings.containsKey(movieId)) {
+                    continue;
+                }
+                Double weightedRating = similarity * rating;
+                // Accumulera för sumberäkningar
+                Double currentWeighted = weightedSum.get(movieId);
+                if (currentWeighted == null) {
+                    weightedSum.put(movieId, weightedRating);
+                } else {
+                    weightedSum.put(movieId, currentWeighted + weightedRating);
+                }
+                // Accumulera för sumberäkningar
+                Double currentSimilarity = similaritySum.get(movieId);
+                if (currentSimilarity == null) {
+                    similaritySum.put(movieId, similarity);
+                } else {
+                    similaritySum.put(movieId, currentSimilarity + similarity);
+                }
+            }
+        }
+        Map<Integer, Double> weightedScores = new HashMap<>();
+        for (Map.Entry<Integer, Double> entry : weightedSum.entrySet()) {
+            int movieId = entry.getKey();
+            double sumWeighted = entry.getValue();
+            double sumSimilarity = similaritySum.getOrDefault(movieId, 0.0);
+
+            if (sumSimilarity > 0.0) {
+                double score = sumWeighted / sumSimilarity;
+                weightedScores.put(movieId, score);
+            }
+        }
+        return weightedScores;
+    }
+
+    // COMPARE TO OTHER USERS
+    public Map<Integer, Double> similarityScoreToAllUsers(int targetUserId, Map<Integer, UserModel> users,
+            boolean isEuclidean) {
+        UserModel targetUser = users.get(targetUserId);
         Map<Integer, Double> similarities = new HashMap<>();
-
         // https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html
         for (Map.Entry<Integer, UserModel> userEntry : users.entrySet()) {
             int otherUserId = userEntry.getKey();
@@ -35,7 +106,12 @@ public class EuclideanService {
                 continue;
             }
             UserModel otherUser = userEntry.getValue();
-            Double similarityComparison = euclideanSimilarity(targetUser, otherUser); // invoke / call Eulicdeansimilarity
+            Double similarityComparison;
+            if (isEuclidean == true) {
+                similarityComparison = euclideanSimilarity(targetUser, otherUser);
+            } else {
+                similarityComparison = pearsonSimilarity(targetUser, otherUser);
+            }
 
             if (similarityComparison > 0.0) {
                 similarities.put(otherUserId, similarityComparison);
@@ -44,7 +120,7 @@ public class EuclideanService {
         return similarities;
     }
 
-    // ACTUAL COMPARISON OF EUCLIDEAN SCORE
+    // EUCLIDEAN SCORE
     public Double euclideanSimilarity(UserModel userA, UserModel userB) {
         Map<Integer, Double> ratingsA = userA.getRatings();
         Map<Integer, Double> ratingsB = userB.getRatings();
@@ -69,89 +145,39 @@ public class EuclideanService {
         return 1.0 / (1.0 + (sumOfSquares));
     }
 
-    public Map<Integer, Double> computeWeightedMovieScores(int targetUserId) {
-        UserAndMovieSet data = userAndMovieService.buildData();
-        Map<Integer, UserModel> users = data.getUsers();
+    // PEARSON SCORE
+    public Double pearsonSimilarity(UserModel u1, UserModel u2) {
+        Map<Integer, Double> r1 = u1.getRatings();
+        Map<Integer, Double> r2 = u2.getRatings();
+        Double sum1 = 0.0;
+        Double sum2 = 0.0;
+        Double sum1Square = 0.0;
+        Double sum2Square = 0.0;
+        Double productSum = 0.0;
+        int numberOfCommonMovies = 0;
 
-        UserModel targetUser = users.get(targetUserId);
-
-        Map<Integer, Double> similarities = similarityScoreToAllUsers(targetUserId, users); // Invoke / call SimilarityScoretoallusers
-        Map<Integer, Double> targetRatings = targetUser.getRatings();
-
-        Map<Integer, Double> weightedSum = new HashMap<>();
-        Map<Integer, Double> similaritySum = new HashMap<>();
-
-        for (Map.Entry<Integer, Double> simEntry : similarities.entrySet()) {
-            int otherUserId = simEntry.getKey();
-            Double similarity = simEntry.getValue();
-
-            UserModel otherUser = users.get(otherUserId);
-
-            for (Map.Entry<Integer, Double> ratingEntry : otherUser.getRatings().entrySet()) {
-                int movieId = ratingEntry.getKey();
-                Double rating = ratingEntry.getValue();
-
-                if (targetRatings.containsKey(movieId)) {
-                    continue;
-                }
-
-                Double weightedRating = similarity * rating;
-
-                // Accumulera för sumberäkningar
-                Double currentWeighted = weightedSum.get(movieId);
-                if (currentWeighted == null) {
-                    weightedSum.put(movieId, weightedRating);
-                } else {
-                    weightedSum.put(movieId, currentWeighted + weightedRating);
-                }
-
-                // Accumulera för sumberäkningar
-                Double currentSimilarity = similaritySum.get(movieId);
-                if (currentSimilarity == null) {
-                    similaritySum.put(movieId, similarity);
-                } else {
-                    similaritySum.put(movieId, currentSimilarity + similarity);
-                }
+        for (int id : r1.keySet()) {
+            if (r2.containsKey(id)) {
+                Double val1 = r1.get(id);
+                Double val2 = r2.get(id);
+                sum1 += val1;
+                sum2 += val2;
+                sum1Square += Math.pow(val1, 2);
+                sum2Square += Math.pow(val2, 2);
+                productSum += val1 * val2;
+                numberOfCommonMovies++;
             }
         }
-        Map<Integer, Double> weightedScores = new HashMap<>();
-
-        for (Map.Entry<Integer, Double> entry : weightedSum.entrySet()) {
-            int movieId = entry.getKey();
-            double sumWeighted = entry.getValue();
-            double sumSimilarity = similaritySum.getOrDefault(movieId, 0.0);
-
-            if (sumSimilarity > 0.0) {
-                double score = sumWeighted / sumSimilarity;
-                weightedScores.put(movieId, score);
-            }
+        if (numberOfCommonMovies == 0) {
+            return 0.0;
         }
-        return weightedScores;
-    }
-
-    public List<RecommendedMovie> topRecommendations(int targetUserId, int number) {
-        UserAndMovieSet data = userAndMovieService.buildData();
-        Map<Integer, MovieModel> movies = data.getMovies();
-        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId); // invoke // call
-                                                                                // computeweightedmoviescore method
-
-        // Här gör vi om till en lsita för att kunna sortera smidigt med .sort().
-        List<Map.Entry<Integer, Double>> sortedList = new ArrayList<>(scores.entrySet());
-        sortedList.sort((entry1, entry2) -> Double.compare(entry2.getValue(), entry1.getValue()));
-
-        List<RecommendedMovie> result = new ArrayList<>(); // Loopar genom en sortedlist och plockar ut topvalen
-        for (int i = 0; i < sortedList.size() && i < number; i++) {
-            Map.Entry<Integer, Double> entry = sortedList.get(i);
-            int movieId = entry.getKey();
-            double score = entry.getValue();
-
-            MovieModel movie = movies.get(movieId);
-            String title = (movie != null) ? movie.getTitle() : "Unknown Title";
-
-            result.add(new RecommendedMovie(movieId, title, score));
+        Double numeratorNumber = productSum - (sum1 * sum2 / numberOfCommonMovies);
+        Double denominatorNumber = Math.sqrt(
+                (sum1Square - Math.pow(sum1, 2) / numberOfCommonMovies) * (sum2Square - Math.pow(sum2, 2) / numberOfCommonMovies));
+        if (denominatorNumber == 0) {
+            return 0.0;
+        } else {
+            return numeratorNumber / denominatorNumber;
         }
-
-        return result;
-
     }
 }

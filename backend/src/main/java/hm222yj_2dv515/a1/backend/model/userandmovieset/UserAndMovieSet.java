@@ -2,8 +2,6 @@ package hm222yj_2dv515.a1.backend.model.userandmovieset;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
 import hm222yj_2dv515.a1.backend.model.usermodel.UserModel;
 import hm222yj_2dv515.a1.backend.model.moviemodel.MovieModel;
 

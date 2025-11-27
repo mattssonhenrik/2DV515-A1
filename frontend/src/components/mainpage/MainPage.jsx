@@ -6,6 +6,7 @@ const MainPage = () => {
     const [selectedUserId, setSelectedUserId] = useState("")
     const [resultCount, setResultCount] = useState(3)
     const [recommendations, setRecommendations] = useState([])
+    const [isEuclidean, setIsEuclidean] = useState(true)
 
     // Loada användarna
     useEffect(() => {
@@ -13,7 +14,7 @@ const MainPage = () => {
             try {
                 const res = await fetch("http://localhost:8080/api/data/users")
                 const data = await res.json()
-                
+
                 setUsers(data)
                 if (data.length > 0) {
                     setSelectedUserId(data[0].id)
@@ -30,7 +31,6 @@ const MainPage = () => {
     const handleReloadDB = async () => {
         try {
             await fetch("http://localhost:8080/api/data/reload", { method: "POST" })
-            alert("Database Reset to Large Set!")
         } catch (err) {
             alert("Error resetting DB")
             console.error(err)
@@ -41,8 +41,8 @@ const MainPage = () => {
     const handleFindMovies = async () => {
         if (!selectedUserId) return
 
-        const url = `http://localhost:8080/api/euclidean/recommendations?userId=${selectedUserId}&results=${resultCount}`
-
+        const url = `http://localhost:8080/api/euclidean/recommendations?userId=${selectedUserId}&isEuclidean=${isEuclidean}&results=${resultCount}`
+        console.log("SENDING REQUEST:", url)
         try {
             const res = await fetch(url)
             const data = await res.json()
@@ -77,8 +77,14 @@ const MainPage = () => {
                 </label>
 
                 <label>
-                    Similarity:
-                    <select disabled><option>Euclidean</option></select>
+                    Similarity Mode:
+                    <select
+                        value={isEuclidean}
+                        onChange={(e) => setIsEuclidean(e.target.value === 'true')}
+                    >
+                        <option value='true'>Euclidean</option>
+                        <option value='false'>Pearson</option>
+                    </select>
                 </label>
 
                 <label>

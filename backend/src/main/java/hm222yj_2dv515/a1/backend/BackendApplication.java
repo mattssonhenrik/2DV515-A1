@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import hm222yj_2dv515.a1.backend.model.datareader.DataReader;
 import hm222yj_2dv515.a1.backend.model.recommendedmovie.RecommendedMovie;
 import hm222yj_2dv515.a1.backend.service.dataservice.DataService;
-import hm222yj_2dv515.a1.backend.service.euclideanservice.EuclideanService;
+import hm222yj_2dv515.a1.backend.service.euclideanandpearsonservice.EuclideanAndPearsonService;
 import hm222yj_2dv515.a1.backend.service.userandmovieservice.UserAndMovieService;
 
 

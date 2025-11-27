@@ -1,7 +1,7 @@
 package hm222yj_2dv515.a1.backend.controller.euclideanandpearson.euclideanandpearsoncontroller;
 
 import hm222yj_2dv515.a1.backend.model.recommendedmovie.RecommendedMovie;
-import hm222yj_2dv515.a1.backend.service.euclideanservice.EuclideanService;
+import hm222yj_2dv515.a1.backend.service.euclideanandpearsonservice.EuclideanAndPearsonService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +17,10 @@ import java.util.List;
                                                 // port
 public class EuclideanAndPearson {
 
-    EuclideanService euclideanService;
+    EuclideanAndPearsonService euclideanAndPearsonService;
 
-    public EuclideanAndPearson(EuclideanService euclideanService) {
-        this.euclideanService = euclideanService;
+    public EuclideanAndPearson(EuclideanAndPearsonService euclideanAndPearsonService) {
+        this.euclideanAndPearsonService = euclideanAndPearsonService;
     }
 
     @GetMapping("/recommendations")
@@ -29,6 +29,6 @@ public class EuclideanAndPearson {
             @RequestParam(value = "results", defaultValue = "3") int results,
             @RequestParam("isEuclidean") boolean isEuclidean) {
 
-        return euclideanService.topRecommendations(userId, results, isEuclidean);
+        return euclideanAndPearsonService.topRecommendations(userId, results, isEuclidean);
     }
 }

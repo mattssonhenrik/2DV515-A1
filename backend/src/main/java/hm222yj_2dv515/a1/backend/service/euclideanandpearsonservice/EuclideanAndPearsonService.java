@@ -1,4 +1,4 @@
-package hm222yj_2dv515.a1.backend.service.euclideanservice;
+package hm222yj_2dv515.a1.backend.service.euclideanandpearsonservice;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,11 +14,11 @@ import hm222yj_2dv515.a1.backend.model.userandmovieset.UserAndMovieSet;
 import hm222yj_2dv515.a1.backend.model.usermodel.UserModel;
 
 @Service
-public class EuclideanService {
+public class EuclideanAndPearsonService {
 
     UserAndMovieService userAndMovieService;
 
-    public EuclideanService(UserAndMovieService userAndMovieService) {
+    public EuclideanAndPearsonService(UserAndMovieService userAndMovieService) {
         this.userAndMovieService = userAndMovieService;
     }
 

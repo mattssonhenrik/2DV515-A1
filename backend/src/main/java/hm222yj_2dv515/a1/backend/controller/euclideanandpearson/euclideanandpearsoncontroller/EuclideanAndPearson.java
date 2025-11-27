@@ -1,4 +1,4 @@
-package hm222yj_2dv515.a1.backend.controller.euclidean.euclideancontroller;
+package hm222yj_2dv515.a1.backend.controller.euclideanandpearson.euclideanandpearsoncontroller;
 
 import hm222yj_2dv515.a1.backend.model.recommendedmovie.RecommendedMovie;
 import hm222yj_2dv515.a1.backend.service.euclideanservice.EuclideanService;
@@ -15,11 +15,11 @@ import java.util.List;
 @RequestMapping("/api/euclidean")
 @CrossOrigin(origins = "http://localhost:5173") // Här berättar vi att vi litar på localhost, vår server körs på annan
                                                 // port
-public class EuclideanController {
+public class EuclideanAndPearson {
 
     EuclideanService euclideanService;
 
-    public EuclideanController(EuclideanService euclideanService) {
+    public EuclideanAndPearson(EuclideanService euclideanService) {
         this.euclideanService = euclideanService;
     }
 

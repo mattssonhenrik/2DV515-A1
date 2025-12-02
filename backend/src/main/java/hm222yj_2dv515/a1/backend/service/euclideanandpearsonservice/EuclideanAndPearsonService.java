@@ -25,7 +25,7 @@ public class EuclideanAndPearsonService {
     public List<RecommendedMovie> topRecommendations(int targetUserId, int number, boolean isEuclidean) {
         UserAndMovieSet data = userAndMovieService.buildData();
         Map<Integer, MovieModel> movies = data.getMovies();
-        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId, isEuclidean); // Computeweightedmoviescore
+        Map<Integer, Double> scores = computeWeightedMovieScores(targetUserId, isEuclidean, data); // Computeweightedmoviescore
         // Här gör vi om till en lsita för att kunna sortera smidigt med .sort().
         List<Map.Entry<Integer, Double>> sortedList = new ArrayList<>(scores.entrySet());
         sortedList.sort((entry1, entry2) -> Double.compare(entry2.getValue(), entry1.getValue()));
@@ -44,8 +44,7 @@ public class EuclideanAndPearsonService {
         return result;
     }
 
-    public Map<Integer, Double> computeWeightedMovieScores(int targetUserId, boolean isEuclidean) {
-        UserAndMovieSet data = userAndMovieService.buildData();
+    public Map<Integer, Double> computeWeightedMovieScores(int targetUserId, boolean isEuclidean, UserAndMovieSet data) {
         Map<Integer, UserModel> users = data.getUsers();
         UserModel targetUser = users.get(targetUserId);
         Map<Integer, Double> similarities = similarityScoreToAllUsers(targetUserId, users, isEuclidean); // SimilarityScoretoallusers
